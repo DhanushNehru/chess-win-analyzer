@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
-import { ArrowLeft, Loader2, ChevronLeft, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Loader2, ChevronLeft, RotateCcw, LayoutDashboard, BrainCircuit } from 'lucide-react';
 import { fetchRecentGames, ChessGame } from '../services/chessApi';
 import { Engine } from '../services/engine';
 import GameList from './GameList';
+import InsightsPanel from './InsightsPanel';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -14,6 +15,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ username, pgnInput, onBack }: DashboardProps) {
+  const [activeTab, setActiveTab] = useState<'live' | 'insights'>('live');
   const [game, setGame] = useState(new Chess());
   const [gamesList, setGamesList] = useState<ChessGame[]>([]);
   const [loading, setLoading] = useState(false);
@@ -112,61 +114,83 @@ export default function Dashboard({ username, pgnInput, onBack }: DashboardProps
         <h2 className="header-title">
           {username ? `Analyzing Games for ${username}` : 'Custom Game Analysis'}
         </h2>
+        
+        {username && (
+          <div className="dashboard-tabs">
+            <button 
+              className={`dashboard-tab ${activeTab === 'live' ? 'active' : ''}`}
+              onClick={() => setActiveTab('live')}
+            >
+              <LayoutDashboard size={18} /> Live Analysis
+            </button>
+            <button 
+              className={`dashboard-tab ${activeTab === 'insights' ? 'active' : ''}`}
+              onClick={() => setActiveTab('insights')}
+            >
+              <BrainCircuit size={18} /> Aggregate Insights
+            </button>
+          </div>
+        )}
       </header>
 
-      <div className="dashboard-layout">
-        <main className="board-section glass-panel">
-          <div className="board-wrapper">
-            <Chessboard 
-              position={game.fen()} 
-              onPieceDrop={onDrop}
-              customDarkSquareStyle={{ backgroundColor: '#779556' }}
-              customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
-              animationDuration={200}
-            />
-          </div>
-          
-          <div className="controls glass-panel">
-            <button className="control-btn" onClick={undoMove}>
-              <ChevronLeft size={20} /> Prev Move
-            </button>
-            <button className="control-btn" onClick={() => {
-              const newGame = new Chess();
-              setGame(newGame);
-              engineRef.current?.evaluatePosition(newGame.fen());
-            }}>
-              <RotateCcw size={20} /> Reset
-            </button>
-            {/* The next move button would require parsing the move history tree, which is complex for now. We allow manual moves for analysis. */}
-          </div>
-        </main>
+      {activeTab === 'insights' && username ? (
+        <div className="insights-wrapper glass-panel">
+          <InsightsPanel games={gamesList} username={username} engine={engineRef.current} />
+        </div>
+      ) : (
+        <div className="dashboard-layout">
+          <main className="board-section glass-panel">
+            <div className="board-wrapper">
+              <Chessboard 
+                position={game.fen()} 
+                onPieceDrop={onDrop}
+                customDarkSquareStyle={{ backgroundColor: '#779556' }}
+                customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
+                animationDuration={200}
+              />
+            </div>
+            
+            <div className="controls glass-panel">
+              <button className="control-btn" onClick={undoMove}>
+                <ChevronLeft size={20} /> Prev Move
+              </button>
+              <button className="control-btn" onClick={() => {
+                const newGame = new Chess();
+                setGame(newGame);
+                engineRef.current?.evaluatePosition(newGame.fen());
+              }}>
+                <RotateCcw size={20} /> Reset
+              </button>
+            </div>
+          </main>
 
-        <aside className="analysis-section glass-panel">
-          <h3>Engine Evaluation</h3>
-          <div className="eval-box">
-            <div className="eval-score gradient-text">{evalScore}</div>
-            {bestMove && (
-              <div className="best-move">
-                Top Engine Move: <strong>{bestMove}</strong>
+          <aside className="analysis-section glass-panel">
+            <h3>Engine Evaluation</h3>
+            <div className="eval-box">
+              <div className="eval-score gradient-text">{evalScore}</div>
+              {bestMove && (
+                <div className="best-move">
+                  Top Engine Move: <strong>{bestMove}</strong>
+                </div>
+              )}
+            </div>
+            
+            {username && gamesList.length > 0 && (
+              <div className="games-container">
+                <h3>Recent Games</h3>
+                <GameList games={gamesList} username={username} onSelectGame={loadGame} />
               </div>
             )}
-          </div>
-          
-          {username && gamesList.length > 0 && (
-            <div className="games-container">
-              <h3>Recent Games</h3>
-              <GameList games={gamesList} username={username} onSelectGame={loadGame} />
-            </div>
-          )}
-          
-          {loading && (
-            <div className="loader-container">
-              <Loader2 className="spinner" size={32} />
-              <p>Fetching games...</p>
-            </div>
-          )}
-        </aside>
-      </div>
+            
+            {loading && (
+              <div className="loader-container">
+                <Loader2 className="spinner" size={32} />
+                <p>Fetching games...</p>
+              </div>
+            )}
+          </aside>
+        </div>
+      )}
     </div>
   );
 }

@@ -49,6 +49,42 @@ export class Engine {
     this.stockfish.postMessage(`go depth ${depth}`);
   }
 
+  evaluatePositionAsync(fen: string, depth = 10): Promise<number> {
+    return new Promise((resolve) => {
+      if (!this.stockfish || !this.isReady) {
+        resolve(0);
+        return;
+      }
+      
+      const listener = (event: MessageEvent) => {
+        const line = event.data;
+        if (line.includes('info depth ' + depth)) {
+          const matchScore = line.match(/score cp (-?\d+)/);
+          const matchMate = line.match(/score mate (-?\d+)/);
+          
+          let val = 0;
+          if (matchMate) {
+            val = parseInt(matchMate[1], 10) > 0 ? 100 : -100;
+          } else if (matchScore) {
+            val = parseInt(matchScore[1], 10) / 100;
+          }
+          
+          this.stockfish?.removeEventListener('message', listener);
+          this.stockfish?.postMessage('stop');
+          resolve(val);
+        } else if (line.startsWith('bestmove')) {
+          // Fallback if it reaches bestmove before matching exactly the depth
+          this.stockfish?.removeEventListener('message', listener);
+          resolve(0); // Better to resolve than hang, though in a robust system we'd parse the last info line
+        }
+      };
+      
+      this.stockfish.addEventListener('message', listener);
+      this.stockfish.postMessage(`position fen ${fen}`);
+      this.stockfish.postMessage(`go depth ${depth}`);
+    });
+  }
+
   onEvaluation(callback: (evalObj: any) => void) {
     this.evaluationCallback = callback;
   }
