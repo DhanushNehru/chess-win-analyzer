@@ -14,11 +14,14 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: rgba(0,0,0,0.1);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 4px;
 }
 
 .game-card:hover {
-  transform: translateX(4px);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-tertiary);
+  border-color: var(--accent-gold);
 }
 
 .game-details {
@@ -30,17 +33,19 @@
 
 .result {
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 0.8rem;
   text-transform: uppercase;
+  font-weight: bold;
 }
 
-.result.won { background: rgba(16, 185, 129, 0.2); color: var(--accent-success); }
-.result.lost { background: rgba(239, 68, 68, 0.2); color: var(--accent-danger); }
-.result.draw { background: rgba(245, 158, 11, 0.2); color: var(--accent-warning); }
+.result.won { background: var(--accent-green); color: white; }
+.result.lost { background: var(--accent-red); color: white; }
+.result.draw { background: var(--accent-gold-dark); color: white; }
 
 .opponent {
   color: var(--text-primary);
+  font-family: var(--font-serif);
 }
 
 .time-control {
