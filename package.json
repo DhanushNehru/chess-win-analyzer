@@ -1,5 +1,5 @@
 {
-  "name": "chess-analyzer",
+  "name": "chess-win-analyzer",
   "private": true,
   "version": "0.0.0",
   "type": "module",

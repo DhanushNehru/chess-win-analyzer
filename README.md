@@ -15,8 +15,8 @@ To run this project locally:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/chess-analyzer.git
-   cd chess-analyzer
+   git clone https://github.com/yourusername/chess-win-analyzer.git
+   cd chess-win-analyzer
    ```
 
 2. **Install dependencies:**
