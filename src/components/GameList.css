@@ -1,0 +1,49 @@
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.game-card {
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.game-card:hover {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.game-details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.result {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.result.won { background: rgba(16, 185, 129, 0.2); color: var(--accent-success); }
+.result.lost { background: rgba(239, 68, 68, 0.2); color: var(--accent-danger); }
+.result.draw { background: rgba(245, 158, 11, 0.2); color: var(--accent-warning); }
+
+.opponent {
+  color: var(--text-primary);
+}
+
+.time-control {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
