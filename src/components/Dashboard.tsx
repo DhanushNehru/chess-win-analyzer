@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
-import { ArrowLeft, Loader2, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Loader2, ChevronLeft, RotateCcw } from 'lucide-react';
 import { fetchRecentGames, ChessGame } from '../services/chessApi';
 import { Engine } from '../services/engine';
 import GameList from './GameList';
